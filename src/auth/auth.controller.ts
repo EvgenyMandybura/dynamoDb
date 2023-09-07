@@ -1,6 +1,6 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import {Body, Controller, Post} from '@nestjs/common';
+import {AuthService} from './auth.service';
+import {LoginDto} from './dto/login.dto';
 
 @Controller('Auth')
 export class AuthController {
@@ -17,7 +17,6 @@ export class AuthController {
             // Обработка неправильных учетных данных
         }
 
-        const token = await this.authService.createToken(user.email);
-        return token;
+        return await this.authService.login(user.email);
     }
 }
