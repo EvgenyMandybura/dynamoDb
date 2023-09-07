@@ -12,7 +12,7 @@ import { UsersModule } from '../users/users.module';
             secret: 'your_secret_key',
             signOptions: { expiresIn: '24h' },
         }),
-        UsersModule,
+        UsersModule
     ],
     providers: [AuthService, JwtStrategy],
     exports: [AuthService],

@@ -25,4 +25,11 @@ export class AuthService {
             access_token: this.jwtService.sign(payload),
         };
     }
+
+    async createToken(email: string) {
+        const payload = { email };
+        return {
+            access_token: this.jwtService.sign(payload),
+        };
+    }
 }
