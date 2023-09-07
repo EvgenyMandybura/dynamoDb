@@ -13,6 +13,7 @@ export class UsersController {
       return 'Incorrect Content-Type';
     }
 
+
     return this.usersService.create(createUserDto);
   }
 
