@@ -2,7 +2,6 @@ import {DatabaseService} from 'src/db/db.service';
 import {Injectable, InternalServerErrorException} from '@nestjs/common';
 import {CreateUserDto} from './dto/create-user.dto';
 import * as AWS from 'aws-sdk';
-import {v4 as uuid} from 'uuid';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -17,7 +16,6 @@ export class UsersService {
   async create(createUserDto: CreateUserDto){
     console.log('Creating user with data:', createUserDto);
     const userObj = {
-      id: uuid(),
       ...createUserDto,
     };
 

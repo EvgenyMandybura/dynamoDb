@@ -67,11 +67,11 @@ resources:
       Properties:
         TableName: Users
         KeySchema:
-          - AttributeName: id
+          - AttributeName: email
             KeyType: HASH
 
         AttributeDefinitions:
-          - AttributeName: id
+          - AttributeName: email
             AttributeType: S
 
         ProvisionedThroughput:
