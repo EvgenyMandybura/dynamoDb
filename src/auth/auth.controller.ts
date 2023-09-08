@@ -17,7 +17,7 @@ export class AuthController {
         if (!user) {
             // Обработка неправильных учетных данных
         }
-        console.log('loginDto',loginDto)
+
         return await this.authService.login(user.email);
     }
 }
