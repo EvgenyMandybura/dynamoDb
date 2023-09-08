@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, Headers } from '@nestjs/com
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
-@Controller('Users')
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
@@ -12,7 +12,6 @@ export class UsersController {
       return 'Incorrect Content-Type';
     }
 
-    // Хеширование пароля
     const hashedPassword = await this.usersService.hashPassword(
         createUserDto.password
     );

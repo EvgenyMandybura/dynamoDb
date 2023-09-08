@@ -12,8 +12,8 @@ import { JwtService } from "@nestjs/jwt";
   imports: [
       ConfigModule.forRoot(),
       DbModule,
-      UsersModule,
       AuthModule,
+      UsersModule
   ],
   controllers: [AppController],
   providers: [AppService, AuthService, JwtService],

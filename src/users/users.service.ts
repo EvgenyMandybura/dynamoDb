@@ -8,7 +8,6 @@ import * as bcrypt from 'bcryptjs';
 @Injectable()
 export class UsersService {
   TABLE_NAME = 'Users';
-
   constructor(private dbService: DatabaseService) {}
 
   async hashPassword(password: string): Promise<string> {
@@ -65,12 +64,10 @@ export class UsersService {
           })
           .promise();
 
-      // Если пользователь не найден, вернуть null
       if (!result.Item) {
         return null;
       }
 
-      // Иначе, вернуть данные пользователя
       return result.Item;
     } catch (err) {
       throw new InternalServerErrorException(err);
