@@ -23,11 +23,11 @@ import {JwtAuthGuardMiddleware} from "./auth/jwt-auth-guard.middleware";
 export class AppModule implements NestModule {
 
     configure(consumer: MiddlewareConsumer) {
-
+/*
         consumer.apply(ValidationPipe).forRoutes(
             { path: 'users', method: RequestMethod.POST },
         );
-
+*/
         consumer.apply(JwtAuthGuardMiddleware).forRoutes(
             // Здесь маршруты, которые нужно защитить с помощью JWT-токена
         );
