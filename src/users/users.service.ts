@@ -34,6 +34,7 @@ export class UsersService {
       password: hashedPassword,
     };
 
+
     const params: AWS.DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.TABLE_NAME,
       Item: userObj,
@@ -44,7 +45,7 @@ export class UsersService {
 
       return {
         message: USER_REGISTERED_SUCCESSFULLY,
-        data: userObj.email,
+        data: userObj,
       };
     } catch (err) {
       throw new InternalServerErrorException(err);

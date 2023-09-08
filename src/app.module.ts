@@ -1,4 +1,4 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import {Module, NestModule, MiddlewareConsumer, ValidationPipe, RequestMethod} from '@nestjs/common';
 import { JwtService } from "@nestjs/jwt";
 import { ConfigModule } from "@nestjs/config";
 import { DbModule } from './db/db.module';
@@ -21,10 +21,15 @@ import {JwtAuthGuardMiddleware} from "./auth/jwt-auth-guard.middleware";
 })
 
 export class AppModule implements NestModule {
+
     configure(consumer: MiddlewareConsumer) {
+
+        consumer.apply(ValidationPipe).forRoutes(
+            { path: 'users', method: RequestMethod.POST },
+        );
+
         consumer.apply(JwtAuthGuardMiddleware).forRoutes(
             // Здесь маршруты, которые нужно защитить с помощью JWT-токена
-            // Например, { path: '/profile', method: RequestMethod.ALL }
         );
     }
 }

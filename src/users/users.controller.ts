@@ -16,14 +16,8 @@ export class UsersController {
     if (createUserDto.password !== createUserDto.confirmPassword) {
       throw new BadRequestException(PASSWORDS_DO_NOT_MATCH);
     }
-
-    return this.usersService.create({
-      email: createUserDto.email,
-      password: createUserDto.password,
-      confirmPassword: createUserDto.confirmPassword,
-      firstName: createUserDto.firstName,
-      lastName: createUserDto.lastName,
-    });
+    console.log('createUserDto',createUserDto)
+    return this.usersService.create(createUserDto);
   }
 
 
