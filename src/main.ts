@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
+
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { Express } from 'express';
 import { Server } from 'http';
@@ -22,6 +23,7 @@ async function bootstrap(): Promise<Server> {
   const expressApp = express();
   const app = await createExpressApp(expressApp);
   await app.init();
+  app.useGlobalPipes(new ValidationPipe());
   return createServer(expressApp);
 }
 export async function handler(event: any, context: Context): Promise<Response> {

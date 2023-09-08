@@ -1,8 +1,13 @@
 import {DatabaseService} from 'src/db/db.service';
-import {Injectable, InternalServerErrorException} from '@nestjs/common';
+import {ConflictException, Injectable, InternalServerErrorException} from '@nestjs/common';
 import {CreateUserDto} from './dto/create-user.dto';
 import * as AWS from 'aws-sdk';
 import * as bcrypt from 'bcryptjs';
+import {
+  EMAIL_IS_ALREADY_IN_USE,
+  RETRIEVED_SUCCESSFULLY,
+  USER_REGISTERED_SUCCESSFULLY
+} from "../constants/text";
 
 @Injectable()
 export class UsersService {
@@ -13,10 +18,20 @@ export class UsersService {
     const saltRounds = 10;
     return await bcrypt.hash(password, saltRounds);
   }
-  async create(createUserDto: CreateUserDto){
-    console.log('Creating user with data:', createUserDto);
+  async create(createUserDto: CreateUserDto) {
+    const { email, password, confirmPassword, ...userData } = createUserDto;
+
+    const existingUser = await this.findOne(email);
+    if (existingUser) {
+      throw new ConflictException(EMAIL_IS_ALREADY_IN_USE);
+    }
+
+    const hashedPassword = await this.hashPassword(password);
+
     const userObj = {
-      ...createUserDto,
+      ...userData,
+      email,
+      password: hashedPassword,
     };
 
     const params: AWS.DynamoDB.DocumentClient.PutItemInput = {
@@ -28,8 +43,8 @@ export class UsersService {
       await this.dbService.connect().put(params).promise();
 
       return {
-        message: 'User registered successfully!',
-        data: userObj.email
+        message: USER_REGISTERED_SUCCESSFULLY,
+        data: userObj.email,
       };
     } catch (err) {
       throw new InternalServerErrorException(err);
@@ -39,7 +54,7 @@ export class UsersService {
   async findAll() {
     try {
       return {
-        message: 'Retrieved successfully!',
+        message: RETRIEVED_SUCCESSFULLY,
         data: await this.dbService
             .connect()
             .scan({
