@@ -6,18 +6,19 @@ import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from "./auth.controller";
 import {EmailService} from "../email-service/email.service";
+import {UsersService} from "../users/users.service";
 
 @Module({
     imports: [
         PassportModule,
         JwtModule.register({
-            secret: 'your_secret_key',
+            secret: 'secret_key',
             signOptions: { expiresIn: '24h' },
         }),
         UsersModule
     ],
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy, EmailService],
+    providers: [AuthService, JwtStrategy, EmailService, UsersService],
     exports: [AuthService],
 })
 export class AuthModule {}
