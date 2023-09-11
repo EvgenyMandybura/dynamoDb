@@ -1,4 +1,4 @@
-import {BadRequestException, Body, Controller, Headers, Post, Req} from '@nestjs/common';
+import {BadRequestException, Body, Controller, Headers, Post} from '@nestjs/common';
 import {AuthService} from './auth.service';
 import {LoginDto} from './dto/login.dto';
 import {INCORRECT_CREDENTIALS, PASSWORDS_DO_NOT_MATCH} from "../constants/text";
@@ -56,7 +56,7 @@ export class AuthController {
     }
 
     @Post('resend-confirmation-link')
-    async resendConfirmationLink(@Req() request: any) {
+    async resendConfirmationLink(@Body() request: any) {
         await this.authService.resendConfirmationLink(request.email);
     }
 }
