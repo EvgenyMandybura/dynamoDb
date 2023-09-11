@@ -44,7 +44,10 @@ export class UsersService {
 
       return {
         message: USER_REGISTERED_SUCCESSFULLY,
-        data: userObj,
+        data: {
+          email,
+          ...userData
+        },
       };
     } catch (err) {
       throw new InternalServerErrorException(err);
@@ -86,15 +89,16 @@ export class UsersService {
       throw new InternalServerErrorException(err);
     }
   }
-/*
+
+  remove(email: string) {
+    return `This action removes user`;
+  }
+
+  /*
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 */
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
-
   async markEmailAsConfirmed(email: string){
     const user = await this.findOne( email );
 
