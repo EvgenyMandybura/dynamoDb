@@ -57,6 +57,6 @@ export class AuthController {
 
     @Post('resend-confirmation-link')
     async resendConfirmationLink(@Req() request: any) {
-        await this.authService.resendConfirmationLink(request.user.email);
+        await this.authService.resendConfirmationLink(request.email);
     }
 }
