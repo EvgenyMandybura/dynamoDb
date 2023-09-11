@@ -37,7 +37,7 @@ export class AuthService {
             secret: process.env.JWT_VERIFICATION_TOKEN_SECRET,
             expiresIn: process.env.JWT_VERIFICATION_TOKEN_EXPIRATION_TIME
         });
-console.log("process",process.env)
+
         const url = `${process.env.EMAIL_CONFIRMATION_URL}?token=${token}`;
 
         const text = `Welcome to the application. To confirm the email address, click here: ${url}`;
@@ -47,6 +47,14 @@ console.log("process",process.env)
             subject: 'Email confirmation',
             text,
         })
+    }
+
+    async resendConfirmationLink(email: string) {
+        const user = await this.usersService.findOne(email);
+        if (user.isEmailConfirmed) {
+            throw new BadRequestException('Email already confirmed');
+        }
+        await this.sendVerificationLink(user.email);
     }
 
     async confirmEmail(email: string) {

@@ -94,13 +94,7 @@ export class UsersService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
-/*
-  async markEmailAsConfirmed(email: string) {
-    return this.usersRepository.update({ email }, {
-      isEmailConfirmed: true
-    });
-  }
-*/
+
   async markEmailAsConfirmed(email: string){
     const user = await this.findOne( email );
 
@@ -128,6 +122,5 @@ export class UsersService {
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
-
   }
 }
