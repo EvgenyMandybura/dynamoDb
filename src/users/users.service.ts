@@ -34,7 +34,6 @@ export class UsersService {
       password: hashedPassword,
     };
 
-
     const params: AWS.DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.TABLE_NAME,
       Item: userObj,

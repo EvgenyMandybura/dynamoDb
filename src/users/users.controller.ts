@@ -1,7 +1,8 @@
 import {Controller, Get, Post, Body, Param, Delete, Headers, BadRequestException} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import {PASSWORDS_DO_NOT_MATCH} from "../constants/text";
+import { PASSWORDS_DO_NOT_MATCH } from "../constants/text";
+import { createUserSchema } from "./validations/user-validation";
 
 @Controller('users')
 export class UsersController {
@@ -13,11 +14,17 @@ export class UsersController {
       return 'Incorrect Content-Type';
     }
 
+    const { error, value } = createUserSchema.validate(createUserDto);
+
+    if (error) {
+      throw new BadRequestException(error.details[0].message);
+    }
+
     if (createUserDto.password !== createUserDto.confirmPassword) {
       throw new BadRequestException(PASSWORDS_DO_NOT_MATCH);
     }
-    console.log('createUserDto',createUserDto)
-    return this.usersService.create(createUserDto);
+
+    return this.usersService.create(value);
   }
 
 
