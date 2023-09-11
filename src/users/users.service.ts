@@ -1,5 +1,5 @@
 import {DatabaseService} from 'src/db/db.service';
-import {ConflictException, Injectable, InternalServerErrorException} from '@nestjs/common';
+import {ConflictException, Injectable, InternalServerErrorException, NotFoundException} from '@nestjs/common';
 import {CreateUserDto} from './dto/create-user.dto';
 import * as AWS from 'aws-sdk';
 import * as bcrypt from 'bcryptjs';
@@ -93,5 +93,41 @@ export class UsersService {
 */
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+/*
+  async markEmailAsConfirmed(email: string) {
+    return this.usersRepository.update({ email }, {
+      isEmailConfirmed: true
+    });
+  }
+*/
+  async markEmailAsConfirmed(email: string){
+    const user = await this.findOne( email );
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const params: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
+      TableName: this.TABLE_NAME,
+      Key: { email: email },
+      UpdateExpression: 'SET isEmailConfirmed = :confirmed',
+      ExpressionAttributeValues: {
+        ':confirmed': true,
+      },
+      ReturnValues: 'ALL_NEW',
+    };
+
+    try {
+      const updatedData = await this.dbService.connect().update(params).promise();
+
+      return {
+        message: 'Email confirmation status updated successfully!',
+        data: updatedData.Attributes,
+      };
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
+
   }
 }

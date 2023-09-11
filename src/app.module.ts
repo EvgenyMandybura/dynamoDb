@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
 import {JwtAuthGuardMiddleware} from "./auth/jwt-auth-guard.middleware";
+import { EmailService } from './email-service/email.service';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import {JwtAuthGuardMiddleware} from "./auth/jwt-auth-guard.middleware";
       UsersModule
   ],
   controllers: [AppController],
-  providers: [AppService, AuthService, JwtService],
+  providers: [AppService, AuthService, JwtService, EmailService],
 })
 
 export class AppModule implements NestModule {

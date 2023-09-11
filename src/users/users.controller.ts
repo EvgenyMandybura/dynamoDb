@@ -3,10 +3,14 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PASSWORDS_DO_NOT_MATCH } from "../constants/text";
 import { createUserSchema } from "./validations/user-validation";
+import { AuthService } from "../auth/auth.service";
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+      private readonly usersService: UsersService,
+      private readonly authService: AuthService,
+      ) {}
 
   @Post("register")
   async create(@Body() createUserDto: CreateUserDto, @Headers('content-type') contentType: string) {
@@ -24,7 +28,10 @@ export class UsersController {
       throw new BadRequestException(PASSWORDS_DO_NOT_MATCH);
     }
 
-    return this.usersService.create(value);
+    const user = await this.usersService.create(value);
+
+    await this.authService.sendVerificationLink(createUserDto.email);
+    return user;
   }
 
 

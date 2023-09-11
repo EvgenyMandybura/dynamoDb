@@ -20,4 +20,10 @@ export class AuthController {
 
         return await this.authService.login(user.email);
     }
+
+    @Post('confirm')
+    async confirm(@Body() confirmationData: any) {
+        const email = await this.authService.decodeConfirmationToken(confirmationData.token);
+        await this.authService.confirmEmail(email);
+    }
 }
