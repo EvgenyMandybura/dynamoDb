@@ -1,6 +1,6 @@
 import {BadRequestException, Body, Controller, Get, Headers, HttpCode, Post, Req, UseGuards} from '@nestjs/common';
 import {AuthService} from './auth.service';
-import {PASSWORDS_DO_NOT_MATCH} from "../constants/text";
+import {INCORRECT_CREDENTIALS, PASSWORDS_DO_NOT_MATCH} from "../constants/text";
 import {CreateUserDto} from "../users/dto/create-user.dto";
 import {createUserSchema} from "../users/validations/user-validation";
 import {UsersService} from "../users/users.service";
@@ -53,12 +53,19 @@ export class AuthController {
     @Post('login')
     async login(@Req() request: any) {
         const { body } = request;
+        const user = await this.authService.validateUser(
+            body.email,
+            body.password,
+        );
+        if (!user) {
+            throw new BadRequestException(INCORRECT_CREDENTIALS);
+        }
         const accessTokenCookie = await this.authService.getCookieWithJwtAccessToken(body.email);
         const refreshTokenCookie = await this.authService.getCookieWithJwtRefreshToken(body.email);
         const { token } = refreshTokenCookie;
         await this.usersService.setCurrentRefreshToken(token, body.email);
         request.res.setHeader('Set-Cookie', [accessTokenCookie, refreshTokenCookie.cookie]);
-        return body;
+        return await this.authService.login(body.email);
     }
 
     @Post('confirm')
