@@ -14,12 +14,7 @@ export class UsersController {
   findOne(@Param('email') email: string) {
     return this.usersService.findOne(email);
   }
-/*
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-*/
+
   @Delete(':email')
   remove(@Param('email') email: string) {
     return this.usersService.remove(email);

@@ -13,9 +13,7 @@ export class AuthService {
     ) {}
 
     async validateUser(email: string, password: string): Promise<any> {
-
         const user = await this.usersService.findOne(email);
-
         if (user && (await bcrypt.compare(password, user.password))) {
             const { password, ...result } = user;
             return result;
@@ -31,15 +29,12 @@ export class AuthService {
     }
 
     async sendVerificationLink(email: string) {
-        // process.env.DYNAMODB_ENDPOINT
         const payload = { email };
         const token = this.jwtService.sign(payload, {
             secret: process.env.JWT_VERIFICATION_TOKEN_SECRET,
             expiresIn: process.env.JWT_VERIFICATION_TOKEN_EXPIRATION_TIME
         });
-
         const url = `${process.env.EMAIL_CONFIRMATION_URL}?token=${token}`;
-
         const text = `Welcome to the application. To confirm the email address, click here: ${url}`;
 
         return this.emailService.sendEmail({
@@ -77,5 +72,40 @@ export class AuthService {
             }
             throw new BadRequestException('Bad confirmation token');
         }
+    }
+
+    async validateToken(token: string) {
+        return this.jwtService.verify(token, {
+            secret : process.env.JWT_SECRET_KEY
+        });
+    }
+
+    async getCookieWithJwtAccessToken(email: string) {
+        const payload = { email };
+        const token = this.jwtService.sign(payload, {
+            secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+            expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME
+        });
+        return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME}`;
+    }
+
+    async getCookieWithJwtRefreshToken(email: string) {
+        const payload = { email };
+        const token = this.jwtService.sign(payload, {
+            secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+            expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME
+        });
+        const cookie = `Refresh=${token}; HttpOnly; Path=/; Max-Age=${process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME}`;
+        return {
+            cookie,
+            token
+        }
+    }
+
+    getCookiesForLogOut() {
+        return [
+            'Authentication=; HttpOnly; Path=/; Max-Age=0',
+            'Refresh=; HttpOnly; Path=/; Max-Age=0'
+        ];
     }
 }

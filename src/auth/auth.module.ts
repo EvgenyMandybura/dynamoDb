@@ -5,8 +5,9 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { AuthController } from "./auth.controller";
-import {EmailService} from "../email-service/email.service";
-import {UsersService} from "../users/users.service";
+import { EmailService } from "../email-service/email.service";
+import { UsersService } from "../users/users.service";
+import { Repository } from "typeorm";
 
 @Module({
     imports: [
@@ -18,7 +19,7 @@ import {UsersService} from "../users/users.service";
         UsersModule
     ],
     controllers: [AuthController],
-    providers: [AuthService, JwtStrategy, EmailService, UsersService],
+    providers: [AuthService, Repository, JwtStrategy, EmailService, UsersService],
     exports: [AuthService],
 })
 export class AuthModule {}

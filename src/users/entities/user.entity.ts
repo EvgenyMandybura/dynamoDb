@@ -5,4 +5,5 @@ export class User {
     password: string;
     confirmPassword: string;
     isEmailConfirmed: boolean;
+    currentHashedRefreshToken: string;
 }

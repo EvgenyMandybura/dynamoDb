@@ -8,11 +8,17 @@ import {
   RETRIEVED_SUCCESSFULLY,
   USER_REGISTERED_SUCCESSFULLY
 } from "../constants/text";
+import { User } from "./entities/user.entity";
+import { Repository } from "typeorm";
+
 
 @Injectable()
 export class UsersService {
   TABLE_NAME = 'Users';
-  constructor(private dbService: DatabaseService) {}
+  constructor(
+      private usersRepository: Repository<User>,
+      private dbService: DatabaseService
+      ) {}
 
   async hashPassword(password: string): Promise<string> {
     const saltRounds = 10;
@@ -94,11 +100,35 @@ export class UsersService {
     return `This action removes user`;
   }
 
-  /*
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(email: string, field: string, value: any ) {
+    const user = await this.findOne( email );
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const params: AWS.DynamoDB.DocumentClient.UpdateItemInput = {
+      TableName: this.TABLE_NAME,
+      Key: { email: email },
+      UpdateExpression: `SET ${field} = :value`,
+      ExpressionAttributeValues: {
+        ':value': value,
+      },
+      ReturnValues: 'ALL_NEW',
+    };
+
+    try {
+      const updatedData = await this.dbService.connect().update(params).promise();
+
+      return {
+        message: 'Successfully updated',
+        data: updatedData.Attributes,
+      };
+    } catch (err) {
+      throw new InternalServerErrorException(err);
+    }
   }
-*/
+
   async markEmailAsConfirmed(email: string){
     const user = await this.findOne( email );
 
@@ -126,5 +156,27 @@ export class UsersService {
     } catch (err) {
       throw new InternalServerErrorException(err);
     }
+  }
+
+  async setCurrentRefreshToken(refreshToken: any, email: string) {
+    const currentHashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    await this.update(email, "currentHashedRefreshToken", currentHashedRefreshToken);
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, email: string) {
+    const user = await this.findOne(email);
+
+    const isRefreshTokenMatching = await bcrypt.compare(
+        refreshToken,
+        user.currentHashedRefreshToken
+    );
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+  }
+
+  async removeRefreshToken(email: string) {
+    return this.update(email,'currentHashedRefreshToken', null);
   }
 }
