@@ -5,6 +5,7 @@ import {CreateUserDto} from "../users/dto/create-user.dto";
 import {createUserSchema} from "../users/validations/user-validation";
 import {UsersService} from "../users/users.service";
 import JwtRefreshGuard from "./jwt-refresh-guard";
+import {AuthGuard} from "./auth.guard";
 
 @Controller('auth')
 export class AuthController {
@@ -79,7 +80,7 @@ export class AuthController {
         await this.authService.resendConfirmationLink(request.email);
     }
 
-    // @UseGuards(AuthGuard)
+    @UseGuards(AuthGuard)
     @Post('logout')
     @HttpCode(200)
     async logOut(@Req() request: any) {
