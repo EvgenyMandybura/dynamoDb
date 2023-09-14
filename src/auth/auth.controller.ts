@@ -2,7 +2,7 @@ import {BadRequestException, Body, Controller, Get, Headers, HttpCode, Post, Req
 import {AuthService} from './auth.service';
 import {INCORRECT_CREDENTIALS, PASSWORDS_DO_NOT_MATCH} from "../constants/text";
 import {CreateUserDto} from "../users/dto/create-user.dto";
-import {createUserSchema} from "../users/validations/user-validation";
+import {confirmPasswordSchema, createUserSchema} from "../users/validations/user-validation";
 import {UsersService} from "../users/users.service";
 import JwtRefreshGuard from "./jwt-refresh-guard";
 import {AuthGuard} from "./auth.guard";
@@ -99,5 +99,23 @@ export class AuthController {
     @Post("restore-password")
     async sendPasswordRecoveryLink(@Body() request: any) {
         await this.authService.sendPasswordRecoveryLink(request.email);
+    }
+
+    @Post('create-new-password')
+    async createNewPassword(@Body() request: any) {
+        const email = await this.authService.decodeConfirmationToken(request.token);
+
+        const { error, value } = confirmPasswordSchema.validate(request);
+        if (error) {
+            throw new BadRequestException(error.details[0].message);
+        }
+
+        if (request.password !== request.confirmPassword) {
+            throw new BadRequestException(PASSWORDS_DO_NOT_MATCH);
+        }
+
+        const hashedPassword = await this.usersService.hashPassword(request.password);
+
+        await this.usersService.update(email, 'password', hashedPassword);
     }
 }

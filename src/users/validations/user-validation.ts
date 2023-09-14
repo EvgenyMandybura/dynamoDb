@@ -11,5 +11,16 @@ export const createUserSchema = Joi.object({
         .pattern(new RegExp('^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])'))
         .message('Password too weak')
         .required(),
-    confirmPassword: Joi.ref('password'), // Поле для подтверждения пароля
+    confirmPassword: Joi.ref('password'),
+}).with('password', 'confirmPassword');
+
+export const confirmPasswordSchema = Joi.object({
+    token: Joi.string(),
+    password: Joi.string()
+        .min(MIN_PASSWORD_LENGTH)
+        .max(MAX_PASSWORD_LENGTH)
+        .pattern(new RegExp('^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])'))
+        .message('Password too weak')
+        .required(),
+    confirmPassword: Joi.ref('password'),
 }).with('password', 'confirmPassword');
