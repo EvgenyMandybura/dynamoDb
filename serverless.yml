@@ -23,7 +23,7 @@ provider:
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     NODE_OPTIONS: --enable-source-maps --stack-trace-limit=1000
-    DYNAMODB_ENDPOINT: ${self:custom.endpoints.dynamodbURL}
+
   iam:
     role:
       statements:
@@ -38,7 +38,7 @@ provider:
             - 'dynamodb:DeleteItem'
 
           Resource: arn:aws:dynamodb:us-east-1:*:table/Users
-  deploymentMethod: direct
+
 
 custom:
 
@@ -58,8 +58,7 @@ custom:
       inMemory: true
       migrate: true
     stages: dev
-  endpoints:
-    dynamodbURL: 'http://localhost:6000'
+
 
 resources:
   Resources:
