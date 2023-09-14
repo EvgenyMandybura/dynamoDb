@@ -38,6 +38,7 @@ provider:
             - 'dynamodb:DeleteItem'
 
           Resource: arn:aws:dynamodb:us-east-1:*:table/Users
+  deploymentMethod: direct
 
 custom:
 
