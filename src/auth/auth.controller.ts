@@ -95,4 +95,9 @@ export class AuthController {
         request.res.setHeader('Set-Cookie', accessTokenCookie);
         return request.user;
     }
+
+    @Post("restore-password")
+    async sendPasswordRecoveryLink(@Body() request: any) {
+        await this.authService.sendPasswordRecoveryLink(request.email);
+    }
 }

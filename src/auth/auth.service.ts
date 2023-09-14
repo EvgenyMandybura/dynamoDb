@@ -52,6 +52,30 @@ export class AuthService {
         await this.sendVerificationLink(user.email);
     }
 
+    async sendPasswordRestoreLink(email: string) {
+        const payload = { email };
+        const token = this.jwtService.sign(payload, {
+            secret: process.env.JWT_VERIFICATION_TOKEN_SECRET,
+            expiresIn: process.env.JWT_VERIFICATION_TOKEN_EXPIRATION_TIME
+        });
+        const url = `${process.env.CHANGE_PASSWORD_URL}?token=${token}`;
+        const text = `To change your password click here: ${url}`;
+
+        return this.emailService.sendEmail({
+            to: email,
+            subject: 'Сhange Password',
+            text,
+        })
+    }
+
+    async sendPasswordRecoveryLink(email: string) {
+        const user = await this.usersService.findOne(email);
+        if (!user) {
+            throw new BadRequestException('This email does not exist');
+        }
+        await this.sendPasswordRestoreLink(user.email);
+    }
+
     async confirmEmail(email: string) {
         await this.usersService.markEmailAsConfirmed(email);
     }
