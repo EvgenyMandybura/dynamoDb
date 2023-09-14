@@ -118,4 +118,9 @@ export class AuthController {
 
         await this.usersService.update(email, 'password', hashedPassword);
     }
+
+    @Post('resend-password-recovery-link')
+    async resendPasswordRecoveryLink(@Body() request: any) {
+        await this.authService.resendPasswordRecoveryLink(request.email);
+    }
 }

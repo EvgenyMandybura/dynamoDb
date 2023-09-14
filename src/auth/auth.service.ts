@@ -52,6 +52,14 @@ export class AuthService {
         await this.sendVerificationLink(user.email);
     }
 
+    async resendPasswordRecoveryLink(email: string) {
+        const user = await this.usersService.findOne(email);
+        if (user.isEmailConfirmed) {
+            throw new BadRequestException('Email already confirmed');
+        }
+        await this.sendPasswordRestoreLink(user.email);
+    }
+
     async sendPasswordRestoreLink(email: string) {
         const payload = { email };
         const token = this.jwtService.sign(payload, {
