@@ -14,15 +14,38 @@ functions:
           method: ANY
           path: '{proxy+}'
 
+
+  myFunction1:
+    handler: handler.myFunction1
+    runtime: nodejs18.x
+    environment:
+      TABLE_NAME: "Users"
+
+  useTable:
+    handler: handler.useTable
+    environment:
+      DYNAMODB_TABLE: "Users"
+
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs18.x
+  environment:
+    tableName: "Users"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource: "arn:aws:s3:::remix-bucket/*"
+
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:GetItem
+        - dynamodb:DeleteItem
+      Resource: '*'
+
   apiGateway:
     shouldStartNameWithService: true
-
-  environment:
-    AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-    NODE_OPTIONS: --enable-source-maps --stack-trace-limit=1000
 
   iam:
     role:
@@ -60,21 +83,5 @@ custom:
     stages: dev
 
 
-resources:
-  Resources:
-    UsersTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: Users
-        KeySchema:
-          - AttributeName: email
-            KeyType: HASH
 
-        AttributeDefinitions:
-          - AttributeName: email
-            AttributeType: S
-
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
 
