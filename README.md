@@ -15,5 +15,4 @@ $ npm run build && serverless offline start
 ```
 ## Deploy to AWS
 
-# dev
 $ serverless deploy
